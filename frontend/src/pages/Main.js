@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+
 import './Main.css'
 
 import api from '../servies/api'
@@ -42,7 +44,9 @@ export default function Main({ match }){
 
     return (
         <div className="main-container">
-            <img src={logo} alt="tindev" />
+            <Link to="/">
+                <img src={logo} alt="tindev" />
+            </Link>
             { developers.length > 0 ? ( 
                 <ul>
                     {developers.map(developer => (
