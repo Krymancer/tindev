@@ -3,21 +3,13 @@ const ObjectId = require('mongoose').Types.ObjectId;
 
 module.exports = {
     async store(request, response){
+        console.log('New Like request');
         const targetDeveloperId = request.params.id;
         const developerId = request.headers.id;
-
-        if(!ObjectId.isValid(targetDeveloperId)){
-            return response.status(400).json({error: 'Target id is not valid'});
-        }else if(!ObjectId.isValid(developerId)){
-            return response.status(400).json({error: 'Developer id is not valid'});
-        }
-
+        console.log(targetDeveloperId, developerId);
         const currentDeveloper = await Developer.findById(developerId);
         const targetDeveloper = await Developer.findById(targetDeveloperId);
 
-        if(!targetDeveloper){
-            return response.status(400).json({error: 'Developer not exists'});
-        }
 
         if(currentDeveloper.likes.includes(targetDeveloper._id)){
             return response.status(400).json({error: 'Target already liked'});
@@ -25,6 +17,16 @@ module.exports = {
 
         if(targetDeveloper.likes.includes(currentDeveloper._id)){
             console.log("macth");
+            const developerSocket = request.connectedUsers[developerId];
+            const targetSocket = request.connectedUsers[targetDeveloperId];
+
+            if(developerSocket){
+                request.io.to(developerSocket).emit('match', targetDeveloper);
+            }
+
+            if(targetSocket){
+                request.io.to(targetSocket).emit('match', currentDeveloper);
+            }
         }
 
         currentDeveloper.likes.push(targetDeveloper._id);

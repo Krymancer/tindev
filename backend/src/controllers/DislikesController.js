@@ -3,6 +3,7 @@ const ObjectId = require('mongoose').Types.ObjectId;
 
 module.exports = {
     async store(request, response){
+        console.log('New Dislike request');
         const targetDeveloperId = request.params.id;
         const developerId = request.headers.id;
 

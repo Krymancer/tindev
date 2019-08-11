@@ -6,7 +6,20 @@ require('dotenv').config();
 
 const router = require('./routes');
 
-const server = express();
+const app = express();
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
+
+const connectedUsers = {};
+
+io.on('connection', socket => {
+    console.log('New Connection: ', socket.id);
+
+    const { developer } = socket.handshake.query;
+
+    connectedUsers[developer] = socket.id;
+
+});
 
 const dbConnectionString = process.env.DB_STRING
 .replace('USER',process.env.DB_USER)
@@ -16,8 +29,16 @@ mongoose.connect(dbConnectionString, {
     useNewUrlParser: true
 });
 
-server.use(cors());
-server.use(express.json());
-server.use(router);
+app.use((request, response, next) => {
+    request.io = io;
+    request.connectedUsers = connectedUsers;
+
+    return next();
+});
+
+app.use(cors());
+app.use(express.json());
+app.use(router);
+
 server.listen(4000);
 

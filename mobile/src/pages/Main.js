@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
+import io from 'socket.io-client';
 import { View, Text, SafeAreaView, Image, StyleSheet, TouchableOpacity } from 'react-native';
 
 import api from '../services/api'
@@ -7,12 +8,13 @@ import api from '../services/api'
 import logo from '../assets/logo.png';
 import like from '../assets/like.png';
 import dislike from '../assets/dislike.png';
+import itsamatch from '../assets/itsamatch.png'
 
 
-const IMG = 'https://avatars3.githubusercontent.com/u/17505605?s=400&u=db53fe7a02f86098083d64d14ca233d29697498f&v=4';
-const BIO = 'Student of Computer Engineering at the Federal University of Ceará - Brazil, Sobral Campus.';
 export default function Main({ navigation }){
     const [developers, setDevelopers] = useState([]);
+    const [matchDev, setMatchDev] = useState(null);
+
     const id = navigation.getParam('developer');
 
     useEffect(() => {
@@ -27,10 +29,21 @@ export default function Main({ navigation }){
         loadDevelopers();
     }, [id]);
 
+    useEffect(() => {
+        const socket = io('http://localhost:4000', {
+            query: { developer: id }
+        });
+
+        socket.on('match', developer => {
+            setMatchDev(developer);
+        });
+
+    },  [id]);
+
     async function handleLike(){
         const [ developer, ...rest ] = developers;
 
-        await api.post(`${developers._id}/like`,null, {
+        await api.post(`${developer._id}/like`,null, {
             headers: { id: id }
         });
 
@@ -85,6 +98,20 @@ export default function Main({ navigation }){
                 </TouchableOpacity>
             </View>
             )}
+
+            { matchDev && 
+                <View style={styles.matchContainer}>
+                    <Image source={itsamatch} style={styles.matchImage} />
+                    <Image style={styles.matchAvatar} source={{uri: matchDev.avatar}}/>
+
+                    <Text style={styles.matchName}>{matchDev.name}</Text>
+                    <Text style={styles.matchBio}>{matchDev.bio}</Text>
+                    
+                    <TouchableOpacity onPress={() => {setMatchDev(null)}}>
+                        <Text style={styles.closeMatch }>FECHAR</Text>
+                    </TouchableOpacity>
+                </View>
+            }
         </SafeAreaView>
     );
 }
@@ -172,6 +199,50 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         color: '#777',
         fontSize: 24,
+        fontWeight: 'bold'
+    },
+
+    matchContainer: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0,0,0,0.8)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    matchAvatar: {
+        width: 160,
+        height: 160,
+        borderRadius: 80,
+        borderWidth: 5,
+        borderColor: '#fff',
+        marginVertical: 30
+    },
+
+    matchName: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        color: '#FFF'
+    },
+
+    matchImage: {
+        height: 60,
+        resizeMode: 'contain'
+    },
+
+    matchBio: {
+        marginTop: 10,
+        fontSize: 16,
+        color: 'rgba(255,255,255,0.8)',
+        lineHeight: 24,
+        textAlign: 'center',
+        paddingHorizontal: 30
+    },
+
+    closeMatch: {
+        fontSize: 16,
+        color: 'rgba(255,255,255,0.8)',
+        textAlign: 'center',
+        marginTop: 30,
         fontWeight: 'bold'
     }
 });
