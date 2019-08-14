@@ -29,7 +29,7 @@ export default function Main({ match }){
     }, [match.params.id]);
 
     useEffect(() => {
-        const socket = io('http://localhost:4000', {
+        const socket = io('http://tindev-backstage.herokuapp.com', {
             query: { developer: match.params.id }
         });
 

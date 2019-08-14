@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
-import { Text, KeyboardAvoidingView , Platform , StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
+import { StatusBar, Text, KeyboardAvoidingView , Platform , StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
 
 import api from '../services/api';
 
@@ -31,6 +31,7 @@ export default function Login({ navigation }){
             enabled={Platform.os === 'ios'}   
             style={styles.container} 
         >
+            <StatusBar backgroundColor='#df4723' barStyle='light-content' />
             <Image source={logo} />
             <TextInput 
                 value={developer}

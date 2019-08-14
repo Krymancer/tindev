@@ -40,5 +40,5 @@ app.use(cors());
 app.use(express.json());
 app.use(router);
 
-server.listen(4000);
+server.listen(process.env.PORT);
 

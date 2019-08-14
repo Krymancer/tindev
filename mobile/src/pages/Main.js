@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import io from 'socket.io-client';
-import { View, Text, SafeAreaView, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, SafeAreaView, Image, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
 
 import api from '../services/api'
 
@@ -14,7 +14,7 @@ import itsamatch from '../assets/itsamatch.png'
 export default function Main({ navigation }){
     const [developers, setDevelopers] = useState([]);
     const [matchDev, setMatchDev] = useState(null);
-
+    console.log('deve len', developers.length);
     const id = navigation.getParam('developer');
 
     useEffect(() => {
@@ -30,7 +30,7 @@ export default function Main({ navigation }){
     }, [id]);
 
     useEffect(() => {
-        const socket = io('http://localhost:4000', {
+        const socket = io('http://tindev-backstage.herokuapp.com/', {
             query: { developer: id }
         });
 
@@ -68,14 +68,14 @@ export default function Main({ navigation }){
 
     return(
         <SafeAreaView style={styles.container}>
+            <StatusBar backgroundColor='#df4723' barStyle='light-content' />
             <TouchableOpacity onPress={handleLogout}>
                 <Image style={styles.logo} source={logo} />
             </TouchableOpacity>
             <View style={styles.cardContainer}>
                 { developers.length === 0 
                 ? <Text style={styles.empty}>Acabou</Text>
-                :
-                (
+                : (
                     developers.map((developer,index) => (
                         <View key={developer._id} style={[styles.card, {zIndex: developers.length - index}]}>
                             <Image style={styles.avatar} source={{uri: developer.avatar }}/>
@@ -85,22 +85,22 @@ export default function Main({ navigation }){
                             </View>
                         </View>
                     ))
-                )
-                }
+                )}
             </View>
+
             { developers.length > 0 && (
                 <View style={styles.buttonsContainer}>
-                <TouchableOpacity onPress={handleDislike} style={styles.button}>
-                    <Image source={dislike}/>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handleLike} style={styles.button}>
-                    <Image source={like}/>
-                </TouchableOpacity>
-            </View>
+                    <TouchableOpacity onPress={handleDislike} style={styles.button}>
+                        <Image source={dislike}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleLike} style={styles.button}>
+                        <Image source={like}/>
+                    </TouchableOpacity>
+                </View>
             )}
 
-            { matchDev && 
-                <View style={styles.matchContainer}>
+            { (matchDev) && 
+                <View style={[styles.matchContainer , {zIndex: 999999e99}]}>
                     <Image source={itsamatch} style={styles.matchImage} />
                     <Image style={styles.matchAvatar} source={{uri: matchDev.avatar}}/>
 
@@ -174,7 +174,8 @@ const styles = StyleSheet.create({
 
     buttonsContainer: {
         flexDirection: 'row',
-        marginBottom: 30
+        marginBottom: 30,
+        zIndex: 1
     }, 
 
     button: {
@@ -206,7 +207,8 @@ const styles = StyleSheet.create({
         ...StyleSheet.absoluteFillObject,
         backgroundColor: 'rgba(0,0,0,0.8)',
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center'
+
     },
 
     matchAvatar: {
