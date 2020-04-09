@@ -1,8 +1,21 @@
 # Tindev
-Minha implementação do tindev feito na semanaomnistack-8
+A tinder-like application for devs
 
-tudo funciona na internet graças ao heroku, com ele eu pude subir o backend e o frontend pra internet e com isso da pra usar o aplicativo fora do deploy pelo server do react.
+## Architeture
+The project consistis of a backend server, REST API to be used and both mobile and web version of the application
 
-### Links
-* Backend (caso alguem queria usar de API): http://tindev-backstage.herokuapp.com
-* Frontend: http://tindev-frontstage.herokuapp.com
+## Tools Used
+- Yarn
+- Node.ks
+- ReactJS
+- React-Native
+- MongoDB / Mongoose / MngoDB ATLAS
+- Axios for API
+
+## Screen Webversion:
+### Login
+![Login](https://i.imgur.com/xTQzplU.png)
+### Main
+![Main](https://i.imgur.com/nQTztvG.png)
+### Match
+![MAtch](https://i.imgur.com/9tQrqvp.png)
